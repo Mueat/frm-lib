@@ -31,8 +31,8 @@ func (r *Request) Bind(v interface{}) error {
 }
 
 func (r *Request) bindMap() error {
-	var bm map[string]interface{}
-	err := r.Bind(bm)
+	bm := make(map[string]interface{})
+	err := r.Bind(&bm)
 	if err == nil {
 		r.Body = bm
 	}
@@ -59,8 +59,8 @@ func (r *Request) GetBodyInt64(k string) int64 {
 			return 0
 		}
 	}
-	if res, ok := r.Body[k].(int64); ok {
-		return res
+	if res, ok := r.Body[k].(float64); ok {
+		return int64(res)
 	}
 	return 0
 }

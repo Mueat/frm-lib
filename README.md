@@ -58,3 +58,12 @@ const (
 ```go
 errors.ParseErrors("./errors/errors.go", "./errors/errors_map.go", "errors")
 ```
+
+
+### TODO
+
+- [ ] 新增链路追踪
+- [ ] db类中自定义logger实现链路追踪
+- [ ] redis类实现链路追踪
+- [ ] curl 实现链路追踪
+- [ ] app 新增链路追踪context

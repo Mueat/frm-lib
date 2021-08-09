@@ -3,6 +3,7 @@ package http
 import (
 	"gitee.com/Rainkropy/frm-lib/cache"
 	"gitee.com/Rainkropy/frm-lib/db"
+	"gitee.com/Rainkropy/frm-lib/errors"
 	"gitee.com/Rainkropy/frm-lib/log"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
@@ -155,7 +156,11 @@ func (a *App) Success(v interface{}) {
 	a.Response.Success(v)
 }
 
-func (a *App) Error(code int, msg string) {
+func (a *App) Error(code int) {
+	msg, ok := errors.Errors[code]
+	if !ok {
+		msg = "Unkonw Error"
+	}
 	a.Response.Error(code, msg)
 }
 

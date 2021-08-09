@@ -180,6 +180,23 @@ func (s *GinServer) Use(funs ...RouterFun) {
 	}
 }
 
+// 设置组
+func (s *GinServer) Group(groupURL string, routers []Router, middlewares ...RouterFun) {
+	gp := s.Engine.Group(groupURL)
+	for _, fun := range middlewares {
+		gp.Use(func(c *gin.Context) {
+			app := InitApp(c)
+			fun(&app)
+		})
+	}
+	for _, r := range routers {
+		gp.Handle(r.Method, r.URL, func(c *gin.Context) {
+			app := InitApp(c)
+			r.Handler(&app)
+		})
+	}
+}
+
 // 是否是开发环境
 func IsDevelopment() bool {
 	return config.Environment == DEVELOPMENT

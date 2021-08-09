@@ -226,6 +226,10 @@ func Glob(pattern string) ([]string, error) {
 
 // SaveUploadedFile uploads the form file to specific dst.
 func SaveUploadedFile(file *multipart.FileHeader, dst string) error {
+	dir := Pathinfo(dst, 1)
+	if !FileExists(dir["dirname"]) {
+		Mkdir(dir["dirname"], 0766)
+	}
 	src, err := file.Open()
 	if err != nil {
 		return err

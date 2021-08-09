@@ -2,7 +2,6 @@ package http
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
@@ -72,8 +71,15 @@ func Init(conf ServerConfig) *GinServer {
 
 // 设置body
 func setBody(c *gin.Context) {
-	bodyBytes, _ := ioutil.ReadAll(c.Request.Body)
-	c.Set("body", bodyBytes)
+	if c.Request.Method == http.MethodPost || c.Request.Method == http.MethodPut || c.Request.Method == http.MethodDelete {
+		ct := c.ContentType()
+		if util.Stripos(ct, "application/json", 0) > -1 {
+			bodyBytes, _ := c.GetRawData()
+			c.Set("body", bodyBytes)
+			return
+		}
+	}
+	c.Set("body", []byte{})
 }
 
 // 设置日志

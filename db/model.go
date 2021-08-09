@@ -2,6 +2,8 @@ package db
 
 import (
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Model struct {
@@ -12,5 +14,5 @@ type Model struct {
 
 type DeletedModel struct {
 	Model
-	DeletedAt time.Time `json:"deleted_at"`
+	DeletedAt gorm.DeletedAt `json:"deleted_at"`
 }

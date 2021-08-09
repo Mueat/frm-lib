@@ -3,6 +3,7 @@ package http
 import (
 	"encoding/json"
 	"errors"
+	"mime/multipart"
 	"strings"
 
 	"gitee.com/Rainkropy/frm-lib/log"
@@ -76,6 +77,11 @@ func (r *Request) GetBodyBool(k string) bool {
 		return res
 	}
 	return false
+}
+
+// 获取上传文件
+func (r *Request) GetFile(fieldName string) (*multipart.FileHeader, error) {
+	return r.Ctx.FormFile(fieldName)
 }
 
 // 绑定body中特定的key值

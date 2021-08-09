@@ -1,6 +1,8 @@
 package http
 
 import (
+	"mime/multipart"
+
 	"gitee.com/Rainkropy/frm-lib/cache"
 	"gitee.com/Rainkropy/frm-lib/db"
 	"gitee.com/Rainkropy/frm-lib/errors"
@@ -68,6 +70,11 @@ func (a *App) GetParam(key string) string {
 //从form中获取值
 func (a *App) GetForm(key, def string) string {
 	return a.Request.GetForm(key, def)
+}
+
+//获取上传文件
+func (a *App) GetFile(field string) (*multipart.FileHeader, error) {
+	return a.Request.GetFile(field)
 }
 
 //获取客户端IP

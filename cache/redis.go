@@ -2,10 +2,13 @@ package cache
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
 	"gitee.com/Rainkropy/frm-lib/log"
+	"gitee.com/Rainkropy/frm-lib/util"
 	"github.com/go-redis/redis/v8"
 )
 
@@ -428,4 +431,41 @@ func (r *Pools) BitPos(key string, bit int64, pos ...int64) (int64, error) {
 // Pipeline
 func (r *Pools) Pipeline() redis.Pipeliner {
 	return r.client.Pipeline()
+}
+
+// QueryCache
+func (r *Pools) Query(key string, data interface{}, fields ...interface{}) error {
+	formats := make([]string, 0)
+	for range fields {
+		formats = append(formats, "%v")
+	}
+	format := util.Base64Encode(util.Implode("_", formats))
+	field := fmt.Sprintf(format, fields...)
+	cacheStr, err := r.HGet(key, field)
+	if err != nil {
+		return err
+	}
+	if cacheStr != "" {
+		err := json.Unmarshal([]byte(cacheStr), data)
+		if err == nil {
+			return err
+		}
+	} else {
+		return errors.New("CacheNotFound")
+	}
+	return nil
+}
+
+func (r *Pools) SaveQuery(key string, data interface{}, fields ...interface{}) error {
+	formats := make([]string, 0)
+	for range fields {
+		formats = append(formats, "%v")
+	}
+	format := util.Base64Encode(util.Implode("_", formats))
+	field := fmt.Sprintf(format, fields...)
+	cacheStr, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+	return r.HSet(key, field, string(cacheStr))
 }

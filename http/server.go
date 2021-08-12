@@ -95,7 +95,7 @@ func (s *GinServer) SetLogger(confName string) {
 		c.Next()
 
 		now := time.Now()
-		l := elog.Get("access").Info().Str("type", "AccessLog")
+		l := elog.Get(confName).Info().Str("type", "AccessLog")
 		bodyInter, _ := c.Get("body")
 		bodyBytes := bodyInter.([]byte)
 		mp := map[string]interface{}{

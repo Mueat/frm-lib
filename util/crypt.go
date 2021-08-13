@@ -119,13 +119,17 @@ func Base64MapDecode(encryptedString string) (map[string]interface{}, error) {
 // @param map[string]interface{} data 要加密的数据
 // @param string encryptKey 加密密钥
 // @return string 生成的JWT字符串
-func EncryptJWT(data map[string]interface{}, encryptKey string) string {
+func EncryptJWT(data interface{}, encryptKey string) string {
 	header := map[string]interface{}{
 		"alg": "HS256",
 		"typ": "JWT",
 	}
 	partOne := Base64MapEncode(header)
-	partTwo := Base64MapEncode(data)
+	jsonStr, err := JSONEncode(data)
+	if err != nil {
+		return ""
+	}
+	partTwo := Base64URLEncode(string(jsonStr))
 	partThree := HMAC(sha256.New, partOne+"."+partTwo, encryptKey)
 
 	return partOne + "." + partTwo + "." + partThree

@@ -118,6 +118,11 @@ func (r *Request) GetForm(key, def string) string {
 	return r.Ctx.DefaultPostForm(key, def)
 }
 
+//获取请求头信息
+func (r *Request) GetHeader(key string) string {
+	return r.Ctx.GetHeader(key)
+}
+
 //获取客户端IP
 func (r *Request) GetIP() string {
 	if r.Ctx.Request.Header.Get("X-Real-IP") != "" {

@@ -82,6 +82,11 @@ func (a *App) GetIP() string {
 	return a.Request.GetIP()
 }
 
+// 获取请求头信息
+func (a *App) GetHeader(key string) string {
+	return a.Request.GetHeader(key)
+}
+
 //获取user-agent
 func (a *App) GetUserAgent() string {
 	return a.Request.GetUserAgent()

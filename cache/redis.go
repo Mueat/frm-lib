@@ -99,9 +99,8 @@ func (r *Pools) Set(k, v string, ex time.Duration) error {
 	err := r.client.Set(ctx, k, v, ex).Err()
 	if err != nil {
 		log.Error().Err(err).Msgf("redis set error key: %s value : %s  error:%s", k, v, err)
-		return err
 	}
-	return nil
+	return err
 }
 
 func (r *Pools) Del(k string) error {
@@ -127,7 +126,9 @@ func (r *Pools) Expire(k string, ex time.Duration) error {
 	k = r.GetKey(k)
 	err := r.client.Expire(ctx, k, ex).Err()
 	if err != nil {
-		log.Error().Err(err).Msgf("redis Expire error key: %s ex : %s  error:%s", k, ex, err)
+		if err != redis.Nil {
+			log.Error().Err(err).Msgf("redis Expire error key: %s ex : %s  error:%s", k, ex, err)
+		}
 		return err
 	}
 	return nil
@@ -136,7 +137,7 @@ func (r *Pools) GetString(k string) string {
 	k = r.GetKey(k)
 	res, err := r.client.Get(ctx, k).Result()
 
-	if err != nil {
+	if err != nil && err != redis.Nil {
 		log.Error().Err(err).Msgf("redis get error key: %s  error:%s", k, err.Error())
 	}
 	return res
@@ -149,7 +150,9 @@ func (r *Pools) BatchPushQueue(k string, values []string) (err error) {
 	k = r.GetKey(k)
 	err = r.client.LPush(ctx, k, values).Err()
 	if err != nil {
-		log.Error().Err(err).Msgf("redis LPUSH key: %s value: %v error: %s", k, values, err)
+		if err != redis.Nil {
+			log.Error().Err(err).Msgf("redis LPUSH key: %s value: %v error: %s", k, values, err)
+		}
 	}
 	return
 }
@@ -158,7 +161,9 @@ func (r *Pools) PopQueue(k string, timeout time.Duration) (data string, err erro
 	k = r.GetKey(k)
 	nameAndData, err := r.client.BRPop(ctx, timeout, k).Result()
 	if err != nil {
-		log.Error().Err(err).Msgf("redis BRPOP queue queueName %s error %v ", k, err.Error())
+		if err != nil && err != redis.Nil {
+			log.Error().Err(err).Msgf("redis BRPOP queue queueName %s error %v ", k, err.Error())
+		}
 		return "", err
 	}
 	if len(nameAndData) > 1 {
@@ -180,8 +185,10 @@ func (r *Pools) LPush(k string, v string) error {
 func (r *Pools) HGet(key, field string) (string, error) {
 	key = r.GetKey(key)
 	res, err := r.client.HGet(ctx, key, field).Result()
-	if err != nil && err != redis.Nil {
-		log.Error().Err(err).Msgf("redis HGET key : %s field : %s error : %s", key, field, err.Error())
+	if err != nil {
+		if err != redis.Nil {
+			log.Error().Err(err).Msgf("redis HGET key : %s field : %s error : %s", key, field, err.Error())
+		}
 		return "", err
 	}
 	return res, nil
@@ -191,7 +198,9 @@ func (r *Pools) HGetAll(k string) (map[string]string, error) {
 	k = r.GetKey(k)
 	res, err := r.client.HGetAll(ctx, k).Result()
 	if err != nil {
-		log.Error().Err(err).Msgf("redis HGetAll key : %s  error : %v", k, err.Error())
+		if err != redis.Nil {
+			log.Error().Err(err).Msgf("redis HGetAll key : %s  error : %v", k, err.Error())
+		}
 		return nil, err
 	}
 	return res, nil
@@ -201,7 +210,9 @@ func (r *Pools) SMembers(key string) ([]string, error) {
 	key = r.GetKey(key)
 	res, err := r.client.SMembers(ctx, key).Result()
 	if err != nil {
-		log.Error().Err(err).Msgf("redis HGetAll key : %s error : %v ", key, err.Error())
+		if err != redis.Nil {
+			log.Error().Err(err).Msgf("redis HGetAll key : %s error : %v ", key, err.Error())
+		}
 		return nil, err
 	}
 	return res, nil
@@ -212,7 +223,9 @@ func (r *Pools) HLen(key string) (int64, error) {
 	key = r.GetKey(key)
 	res, err := r.client.HLen(ctx, key).Result()
 	if err != nil {
-		log.Error().Err(err).Msgf("redis HLen key : %s  error : %s", key, err.Error())
+		if err != redis.Nil {
+			log.Error().Err(err).Msgf("redis HLen key : %s  error : %s", key, err.Error())
+		}
 		return res, err
 	}
 	return res, nil
@@ -221,7 +234,9 @@ func (r *Pools) HSet(key, field string, value string) error {
 	key = r.GetKey(key)
 	err := r.client.HSet(ctx, key, field, value).Err()
 	if err != nil {
-		log.Error().Err(err).Msgf("redis HSET key : %s  field : %s  value : %s error : %s", key, field, value, err.Error())
+		if err != redis.Nil {
+			log.Error().Err(err).Msgf("redis HSET key : %s  field : %s  value : %s error : %s", key, field, value, err.Error())
+		}
 		return err
 	}
 	return nil
@@ -268,7 +283,9 @@ func (r *Pools) Exists(key string) (bool, error) {
 	key = r.GetKey(key)
 	res, err := r.client.Exists(ctx, key).Result()
 	if err != nil {
-		log.Error().Err(err).Msgf("redis Exists key : %s  error : %s", key, err.Error())
+		if err != redis.Nil {
+			log.Error().Err(err).Msgf("redis Exists key : %s  error : %s", key, err.Error())
+		}
 		return false, err
 	}
 	if res > 0 {
@@ -282,7 +299,9 @@ func (r *Pools) ZRangeAll(key string) ([]string, error) {
 	key = r.GetKey(key)
 	res, err := r.client.ZRange(ctx, key, 0, -1).Result()
 	if err != nil {
-		log.Error().Err(err).Msgf("redis Exists key : %s  error : %s", key, err.Error())
+		if err != redis.Nil {
+			log.Error().Err(err).Msgf("redis Exists key : %s  error : %s", key, err.Error())
+		}
 		return res, err
 	}
 	return res, nil
@@ -345,7 +364,9 @@ func (r *Pools) GetBit(key string, offset int64) (int64, error) {
 	key = r.GetKey(key)
 	res, err := r.client.GetBit(ctx, key, offset).Result()
 	if err != nil {
-		log.Error().Err(err).Msgf("redis GetBit key : %s  error : %s", key, err.Error())
+		if err != redis.Nil {
+			log.Error().Err(err).Msgf("redis GetBit key : %s  error : %s", key, err.Error())
+		}
 		return res, err
 	}
 	return res, nil
@@ -359,7 +380,9 @@ func (r *Pools) BitCount(key string, start int64, end int64) (int64, error) {
 	}
 	res, err := r.client.BitCount(ctx, key, &bc).Result()
 	if err != nil {
-		log.Error().Err(err).Msgf("redis BitCount key : %s  error : %s", key, err.Error())
+		if err != redis.Nil {
+			log.Error().Err(err).Msgf("redis BitCount key : %s  error : %s", key, err.Error())
+		}
 		return res, err
 	}
 	return res, nil
@@ -373,7 +396,9 @@ func (r *Pools) BitOpAnd(destKey string, keys ...string) (int64, error) {
 	}
 	res, err := r.client.BitOpAnd(ctx, destKey, mkeys...).Result()
 	if err != nil {
-		log.Error().Err(err).Msgf("redis BitOpAnd keys : %v  error : %s", keys, err.Error())
+		if err != redis.Nil {
+			log.Error().Err(err).Msgf("redis BitOpAnd keys : %v  error : %s", keys, err.Error())
+		}
 		return res, err
 	}
 	return res, nil
@@ -387,7 +412,9 @@ func (r *Pools) BitOpOr(destKey string, keys ...string) (int64, error) {
 	}
 	res, err := r.client.BitOpOr(ctx, destKey, mkeys...).Result()
 	if err != nil {
-		log.Error().Err(err).Msgf("redis BitOpOr keys : %v  error : %s", keys, err.Error())
+		if err != redis.Nil {
+			log.Error().Err(err).Msgf("redis BitOpOr keys : %v  error : %s", keys, err.Error())
+		}
 		return res, err
 	}
 	return res, nil
@@ -401,7 +428,9 @@ func (r *Pools) BitOpXor(destKey string, keys ...string) (int64, error) {
 	}
 	res, err := r.client.BitOpXor(ctx, destKey, mkeys...).Result()
 	if err != nil {
-		log.Error().Err(err).Msgf("redis BitOpXor keys : %v  error : %s", keys, err.Error())
+		if err != redis.Nil {
+			log.Error().Err(err).Msgf("redis BitOpXor keys : %v  error : %s", keys, err.Error())
+		}
 		return res, err
 	}
 	return res, nil
@@ -412,7 +441,9 @@ func (r *Pools) BitOpNot(destKey string, key string) (int64, error) {
 	key = r.GetKey(key)
 	res, err := r.client.BitOpNot(ctx, destKey, key).Result()
 	if err != nil {
-		log.Error().Err(err).Msgf("redis BitOpNot destkey: %s key : %s  error : %s", destKey, key, err.Error())
+		if err != redis.Nil {
+			log.Error().Err(err).Msgf("redis BitOpNot destkey: %s key : %s  error : %s", destKey, key, err.Error())
+		}
 		return res, err
 	}
 	return res, nil
@@ -422,7 +453,9 @@ func (r *Pools) BitPos(key string, bit int64, pos ...int64) (int64, error) {
 	key = r.GetKey(key)
 	res, err := r.client.BitPos(ctx, key, bit, pos...).Result()
 	if err != nil {
-		log.Error().Err(err).Msgf("redis BitPos key : %s  error : %s", key, err.Error())
+		if err != redis.Nil {
+			log.Error().Err(err).Msgf("redis BitPos key : %s  error : %s", key, err.Error())
+		}
 		return res, err
 	}
 	return res, nil

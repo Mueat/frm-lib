@@ -151,6 +151,10 @@ func (a *App) AbortWithStatus(code int) {
 	a.Response.AbortWithStatus(code)
 }
 
+func (a *App) Next() {
+	a.Request.Ctx.Next()
+}
+
 func (a *App) Status(code int) *App {
 	a.Response.StatusCode = code
 	return a

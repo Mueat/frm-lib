@@ -2,6 +2,7 @@ package http
 
 import (
 	"mime/multipart"
+	"strconv"
 
 	"gitee.com/Rainkropy/frm-lib/cache"
 	"gitee.com/Rainkropy/frm-lib/db"
@@ -60,6 +61,19 @@ func (a *App) BodyBind(k string, v interface{}) error {
 //从url的query中获取指定key的内容，如果key不存在，则返回def内容
 func (a *App) GetQuery(key string, def string) string {
 	return a.Request.GetQuery(key, def)
+}
+
+//从url的query中获取指定key的int64值，如果key不存在，则返回def内容
+func (a *App) GetQueryInt64(key string, def int64) int64 {
+	res := a.Request.GetQuery(key, "")
+	if res != "" {
+		ret, err := strconv.Atoi(res)
+		if err != nil {
+			return def
+		}
+		return int64(ret)
+	}
+	return def
 }
 
 //从url的params中获取指定key内容

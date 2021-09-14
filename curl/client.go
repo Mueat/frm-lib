@@ -3,7 +3,6 @@ package curl
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"net/http"
 
 	"gitee.com/Rainkropy/frm-lib/util"
@@ -120,13 +119,10 @@ func (c *Client) Do(method string, url string, data interface{}, headers map[str
 		if c.Options.Retry > c.Tried {
 			return c.Do(method, url, data, headers)
 		}
-		return resp, err
 	} else if resp.StatusCode >= 500 {
 		if c.Options.Retry > c.Tried {
 			return c.Do(method, url, data, headers)
 		}
-		return resp, err
 	}
-
-	return nil, errors.New("RequestMethodError")
+	return resp, err
 }

@@ -166,6 +166,11 @@ func (s *GinServer) Handle(method string, url string, handlers ...RouterFun) {
 	s.Engine.Handle(method, url, ginHandlers...)
 }
 
+// 静态文件绑定
+func (s *GinServer) Static(url string, dir string) {
+	s.Engine.Static(url, dir)
+}
+
 // 绑定POST请求
 func (s *GinServer) Post(url string, handlers ...RouterFun) {
 	s.Handle(http.MethodPost, url, handlers...)

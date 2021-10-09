@@ -3,6 +3,7 @@ package curl
 import (
 	"bytes"
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 
 	"gitee.com/Rainkropy/frm-lib/util"
@@ -125,4 +126,14 @@ func (c *Client) Do(method string, url string, data interface{}, headers map[str
 		}
 	}
 	return resp, err
+}
+
+func BindResponse(resp *httpclient.Response, bindData interface{}) error {
+	b, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+	if err != nil {
+		return err
+	}
+
+	return json.Unmarshal(b, bindData)
 }

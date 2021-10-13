@@ -3,7 +3,6 @@ package weixin
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"time"
 
 	"gitee.com/Rainkropy/frm-lib/cache"
@@ -34,6 +33,12 @@ type AccessTokenResp struct {
 	ExpriesIn   int64  `json:"expires_in"`
 }
 
+type QrCodeResp struct {
+	WeixinResponse
+	ContentType string `json:"contentType"`
+	Buffer      []byte `json:"buffer"`
+}
+
 type UserInfo struct {
 	NickName  string `json:"nickName"`
 	AvatarURL string `json:"avatarUrl"`
@@ -49,6 +54,7 @@ type UserInfo struct {
 const (
 	CODE_2_SESSION_URL = "/sns/jscode2session"
 	ACCESSTOKEN_URL    = "/cgi-bin/token"
+	GET_QR_CODE        = "/wxa/getwxacodeunlimit"
 
 	ACCESSTOKEN_CACHE_KEY = "WEAPP:ACCESSTOKEN:"
 )
@@ -90,12 +96,9 @@ func (mp *WeApp) DecodeData(encryptedData string, iv string, sessionKey string) 
 	}
 
 	res, err := util.DeAesCode2Base64(encryptedData, []byte(aesKey), []byte(iv))
-
 	if err != nil {
 		return nil, errors.New("EncryptedDataErr")
 	}
-
-	fmt.Println(string(res))
 
 	uinfo := UserInfo{}
 	err = json.Unmarshal(res, &uinfo)
@@ -109,14 +112,16 @@ func (mp *WeApp) DecodeData(encryptedData string, iv string, sessionKey string) 
 // 获取access token
 // https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/access-token/auth.getAccessToken.html
 func (mp *WeApp) GetAccessToken() (string, error) {
-	cache := cache.GetRedis(mp.CacheName)
+	var redis *cache.Pools
 	key := ACCESSTOKEN_CACHE_KEY + mp.AppID
-
-	// 从缓存中读取
-	if cache != nil {
-		res := cache.GetString(key)
-		if res != "" {
-			return res, nil
+	if mp.CacheName != "" {
+		redis = cache.GetRedis(mp.CacheName)
+		// 从缓存中读取
+		if redis != nil {
+			res := redis.GetString(key)
+			if res != "" {
+				return res, nil
+			}
 		}
 	}
 
@@ -133,7 +138,32 @@ func (mp *WeApp) GetAccessToken() (string, error) {
 	}
 
 	// 设置缓存，30分钟过期
-	cache.Set(key, resp.AccessToken, time.Minute*30)
+	if mp.CacheName != "" {
+		redis.Set(key, resp.AccessToken, time.Minute*30)
+	}
 
 	return resp.AccessToken, nil
+}
+
+// 生成小程序二维码
+// @param string sence 二维码参数
+func (mp *WeApp) GetQrCode(page, sence string, width int64) (*QrCodeResp, error) {
+	ak, err := mp.GetAccessToken()
+	if err != nil {
+		return nil, err
+	}
+
+	// 通过API获取
+	params := make(map[string]interface{})
+	params["scene"] = util.URLEncode(sence)
+	params["page"] = page
+	params["width"] = width
+
+	resp := QrCodeResp{}
+	err = Api("POST", GET_QR_CODE+"?access_token="+ak, params, &resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return &resp, nil
 }

@@ -3,8 +3,10 @@ package curl
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 
 	"gitee.com/Rainkropy/frm-lib/util"
 	"github.com/ddliu/go-httpclient"
@@ -87,7 +89,7 @@ func (c *Client) Do(method string, url string, data interface{}, headers map[str
 		if isJson {
 			resp, err = hc.PostJson(url, data)
 		} else {
-			resp, err = hc.Post(url, data)
+			resp, err = hc.Post(url, toUrlValues(data))
 		}
 	}
 	if util.Strtoupper(method) == http.MethodPut {
@@ -111,9 +113,9 @@ func (c *Client) Do(method string, url string, data interface{}, headers map[str
 			resp, err = hc.Do(http.MethodPut, url, headers, bytes.NewReader(body))
 		}
 	} else if util.Strtoupper(method) == http.MethodGet {
-		resp, err = hc.Get(url, data)
+		resp, err = hc.Get(url, toUrlValues(data))
 	} else if util.Strtoupper(method) == http.MethodDelete {
-		resp, err = hc.Delete(url, data)
+		resp, err = hc.Delete(url, toUrlValues(data))
 	}
 
 	if err != nil {
@@ -136,4 +138,29 @@ func BindResponse(resp *httpclient.Response, bindData interface{}) error {
 	}
 
 	return json.Unmarshal(b, bindData)
+}
+
+func toUrlValues(v interface{}) url.Values {
+	switch t := v.(type) {
+	case url.Values:
+		return t
+	case map[string][]string:
+		return url.Values(t)
+	case map[string]string:
+		rst := make(url.Values)
+		for k, v := range t {
+			rst.Add(k, v)
+		}
+		return rst
+	case map[string]interface{}:
+		rst := make(url.Values)
+		for k, v := range t {
+			rst.Add(k, fmt.Sprintf("%v", v))
+		}
+		return rst
+	case nil:
+		return make(url.Values)
+	default:
+		panic("Invalid value")
+	}
 }

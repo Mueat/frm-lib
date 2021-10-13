@@ -34,9 +34,9 @@ func Api(method string, action string, params interface{}, resp WeixinResponseIn
 	url := WEIXIN_BASE_URL + action
 	headers := make(map[string]string)
 	if method == "POST" {
-		headers["content-type"] = "application/json"
+		headers["Content-Type"] = "application/json"
 	}
-	res, err := client.Do(method, url, params, nil)
+	res, err := client.Do(method, url, params, headers)
 	if err != nil {
 		log.Error().Str("lib", "weixin").Str("method", "api.curl.do").Err(err).Send()
 		return err

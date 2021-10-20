@@ -16,6 +16,7 @@ require (
 	github.com/lestrrat/go-file-rotatelogs v0.0.0-20180223000712-d3151e2a480f
 	github.com/lestrrat/go-strftime v0.0.0-20180220042222-ba3bf9c1d042 // indirect
 	github.com/rs/zerolog v1.23.0
+	github.com/wechatpay-apiv3/wechatpay-go v0.2.9
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d // indirect
 	gorm.io/driver/mysql v1.1.1

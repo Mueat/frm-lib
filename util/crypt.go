@@ -2,16 +2,21 @@ package util
 
 import (
 	"bytes"
+	"crypto"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/hmac"
 	"crypto/md5"
+	"crypto/rand"
+	"crypto/rsa"
 	"crypto/sha1"
 	"crypto/sha256"
+	"crypto/x509"
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"hash"
 	"io/ioutil"
 	"strings"
@@ -264,4 +269,87 @@ func DeAesCode2Base64(cyptedStr string, key []byte, iv []byte) ([]byte, error) {
 	}
 	//执行aes解密
 	return AesDeCrypt(cyptedByte, key, iv)
+}
+
+// DecryptAES256GCM 使用 AEAD_AES_256_GCM 算法进行解密
+//
+// 你可以使用此算法完成微信支付平台证书和回调报文解密，详见：
+// https://wechatpay-api.gitbook.io/wechatpay-api-v3/qian-ming-zhi-nan-1/zheng-shu-he-hui-tiao-bao-wen-jie-mi
+func DecryptAES256GCM(aesKey, associatedData, nonce, ciphertext string) (plaintext string, err error) {
+	decodedCiphertext, err := base64.StdEncoding.DecodeString(ciphertext)
+	if err != nil {
+		return "", err
+	}
+	c, err := aes.NewCipher([]byte(aesKey))
+	if err != nil {
+		return "", err
+	}
+	gcm, err := cipher.NewGCM(c)
+	if err != nil {
+		return "", err
+	}
+	dataBytes, err := gcm.Open(nil, []byte(nonce), decodedCiphertext, []byte(associatedData))
+	if err != nil {
+		return "", err
+	}
+	return string(dataBytes), nil
+}
+
+// SignSHA256WithRSA 通过私钥对字符串以 SHA256WithRSA 算法生成签名信息
+func SignSHA256WithRSA(source string, privateKey *rsa.PrivateKey) (signature string, err error) {
+	if privateKey == nil {
+		return "", fmt.Errorf("private key should not be nil")
+	}
+	h := crypto.Hash.New(crypto.SHA256)
+	_, err = h.Write([]byte(source))
+	if err != nil {
+		return "", nil
+	}
+	hashed := h.Sum(nil)
+	signatureByte, err := rsa.SignPKCS1v15(rand.Reader, privateKey, crypto.SHA256, hashed)
+	if err != nil {
+		return "", err
+	}
+	return base64.StdEncoding.EncodeToString(signatureByte), nil
+}
+
+// EncryptOAEPWithPublicKey 使用公钥进行加密
+func EncryptOAEPWithPublicKey(message string, publicKey *rsa.PublicKey) (ciphertext string, err error) {
+	if publicKey == nil {
+		return "", fmt.Errorf("you should input *rsa.PublicKey")
+	}
+	ciphertextByte, err := rsa.EncryptOAEP(sha1.New(), rand.Reader, publicKey, []byte(message), nil)
+	if err != nil {
+		return "", fmt.Errorf("encrypt message with public key err:%s", err.Error())
+	}
+	ciphertext = base64.StdEncoding.EncodeToString(ciphertextByte)
+	return ciphertext, nil
+}
+
+// EncryptOAEPWithCertificate 先解析出证书中的公钥，然后使用公钥进行加密
+func EncryptOAEPWithCertificate(message string, certificate *x509.Certificate) (ciphertext string, err error) {
+	if certificate == nil {
+		return "", fmt.Errorf("you should input *x509.Certificate")
+	}
+	publicKey, ok := certificate.PublicKey.(*rsa.PublicKey)
+	if !ok {
+		return "", fmt.Errorf("certificate is invalid")
+	}
+	return EncryptOAEPWithPublicKey(message, publicKey)
+}
+
+// DecryptOAEP 使用私钥进行解密
+func DecryptOAEP(ciphertext string, privateKey *rsa.PrivateKey) (message string, err error) {
+	if privateKey == nil {
+		return "", fmt.Errorf("you should input *rsa.PrivateKey")
+	}
+	decodedCiphertext, err := base64.StdEncoding.DecodeString(ciphertext)
+	if err != nil {
+		return "", fmt.Errorf("base64 decode failed, error=%s", err.Error())
+	}
+	messageBytes, err := rsa.DecryptOAEP(sha1.New(), rand.Reader, privateKey, decodedCiphertext, nil)
+	if err != nil {
+		return "", fmt.Errorf("decrypt ciphertext with private key err:%s", err)
+	}
+	return string(messageBytes), nil
 }

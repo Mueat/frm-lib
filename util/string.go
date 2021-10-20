@@ -665,3 +665,18 @@ func Htmlentities(str string) string {
 func HTMLEntityDecode(str string) string {
 	return html.UnescapeString(str)
 }
+
+// GenerateNonce 生成一个长度为 NonceLength 的随机字符串（只包含大小写字母与数字）
+func GenerateNonce(length int64) (string, error) {
+	nonceSymbols := "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	bytes := make([]byte, length)
+	_, err := rand.Read(bytes)
+	if err != nil {
+		return "", err
+	}
+	symbolsByteLength := byte(len(nonceSymbols))
+	for i, b := range bytes {
+		bytes[i] = nonceSymbols[b%symbolsByteLength]
+	}
+	return string(bytes), nil
+}

@@ -1,7 +1,9 @@
 package http
 
 import (
+	"bytes"
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
@@ -74,8 +76,14 @@ func setBody(c *gin.Context) {
 	if c.Request.Method == http.MethodPost || c.Request.Method == http.MethodPut || c.Request.Method == http.MethodDelete {
 		ct := c.ContentType()
 		if util.Stripos(ct, "application/json", 0) > -1 {
-			bodyBytes, _ := c.GetRawData()
-			c.Set("body", bodyBytes)
+			body, err := ioutil.ReadAll(c.Request.Body)
+			if err != nil {
+				return
+			}
+			_ = c.Request.Body.Close()
+			c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+
+			c.Set("body", body)
 			return
 		}
 	}

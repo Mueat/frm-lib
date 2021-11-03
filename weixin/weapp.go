@@ -51,6 +51,13 @@ type UserInfo struct {
 	UnionID   string `json:"unionId"`
 }
 
+type UserPhone struct {
+	PhoneNumber     string                 `json:"phoneNumber"`
+	PurePhoneNumber string                 `json:"purePhoneNumber"`
+	CountryCode     string                 `json:"countryCode"`
+	Watermark       map[string]interface{} `json:"watermark"`
+}
+
 const (
 	CODE_2_SESSION_URL = "/sns/jscode2session"
 	ACCESSTOKEN_URL    = "/cgi-bin/token"
@@ -78,35 +85,35 @@ func (mp *WeApp) Code2Session(code string) (*AuthResp, error) {
 
 // 解密微信小程序用户信息
 // https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/signature.html
-func (mp *WeApp) DecodeData(encryptedData string, iv string, sessionKey string) (*UserInfo, error) {
+func (mp *WeApp) DecodeData(encryptedData string, iv string, sessionKey string, v interface{}) error {
 	if len(sessionKey) != 24 {
-		return nil, errors.New("SessionKeyErr")
+		return errors.New("SessionKeyErr")
 	}
 	if len(iv) != 24 {
-		return nil, errors.New("IvErr")
+		return errors.New("IvErr")
 	}
 	aesKey, err := util.Base64Decode(sessionKey)
 	if err != nil {
-		return nil, errors.New("SessionKeyErr")
+		return errors.New("SessionKeyErr")
 	}
 
 	iv, err = util.Base64Decode(iv)
 	if err != nil {
-		return nil, errors.New("IvErr")
+		return errors.New("IvErr")
 	}
 
 	res, err := util.DeAesCode2Base64(encryptedData, []byte(aesKey), []byte(iv))
 	if err != nil {
-		return nil, errors.New("EncryptedDataErr")
+		return errors.New("EncryptedDataErr")
 	}
 
-	uinfo := UserInfo{}
-	err = json.Unmarshal(res, &uinfo)
+	//uinfo := UserInfo{}
+	err = json.Unmarshal(res, &v)
 	if err != nil {
-		return nil, errors.New("EncryptedDataErr")
+		return errors.New("EncryptedDataErr")
 	}
 
-	return &uinfo, nil
+	return nil
 }
 
 // 获取access token

@@ -1,8 +1,8 @@
 package config
 
 import (
-	"gitee.com/Rainkropy/frm-lib/errors"
 	"github.com/BurntSushi/toml"
+	"github.com/Mueat/frm-lib/errors"
 )
 
 // ParseConfig 解析配置文件

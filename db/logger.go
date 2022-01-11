@@ -1,6 +1,6 @@
 package db
 
-import "gitee.com/Rainkropy/frm-lib/log"
+import "github.com/Mueat/frm-lib/log"
 
 // 日志记录
 type DBLogger struct {

@@ -9,7 +9,7 @@ import (
 	"math/rand"
 	"time"
 
-	"gitee.com/Rainkropy/frm-lib/util"
+	"github.com/Mueat/frm-lib/util"
 	"github.com/afocus/captcha"
 )
 

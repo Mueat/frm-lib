@@ -5,8 +5,8 @@ import (
 	"errors"
 	"time"
 
-	"gitee.com/Rainkropy/frm-lib/cache"
-	"gitee.com/Rainkropy/frm-lib/util"
+	"github.com/Mueat/frm-lib/cache"
+	"github.com/Mueat/frm-lib/util"
 )
 
 type WeApp struct {

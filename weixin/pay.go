@@ -3,8 +3,8 @@ package weixin
 import (
 	"context"
 
-	"gitee.com/Rainkropy/frm-lib/http"
-	"gitee.com/Rainkropy/frm-lib/log"
+	"github.com/Mueat/frm-lib/http"
+	"github.com/Mueat/frm-lib/log"
 	"github.com/wechatpay-apiv3/wechatpay-go/core"
 	"github.com/wechatpay-apiv3/wechatpay-go/core/auth/verifiers"
 	"github.com/wechatpay-apiv3/wechatpay-go/core/downloader"

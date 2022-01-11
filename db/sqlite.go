@@ -3,7 +3,7 @@ package db
 import (
 	"time"
 
-	"gitee.com/Rainkropy/frm-lib/log"
+	"github.com/Mueat/frm-lib/log"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"

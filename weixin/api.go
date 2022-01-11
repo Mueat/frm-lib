@@ -1,9 +1,9 @@
 package weixin
 
 import (
-	"gitee.com/Rainkropy/frm-lib/curl"
-	"gitee.com/Rainkropy/frm-lib/errors"
-	"gitee.com/Rainkropy/frm-lib/log"
+	"github.com/Mueat/frm-lib/curl"
+	"github.com/Mueat/frm-lib/errors"
+	"github.com/Mueat/frm-lib/log"
 )
 
 type WeixinResponseInterface interface {

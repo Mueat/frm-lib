@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"time"
 
-	"gitee.com/Rainkropy/frm-lib/log"
-	"gitee.com/Rainkropy/frm-lib/util"
+	"github.com/Mueat/frm-lib/log"
+	"github.com/Mueat/frm-lib/util"
 	"github.com/go-redis/redis/v8"
 )
 

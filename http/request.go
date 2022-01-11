@@ -6,7 +6,7 @@ import (
 	"mime/multipart"
 	"strings"
 
-	"gitee.com/Rainkropy/frm-lib/log"
+	"github.com/Mueat/frm-lib/log"
 	"github.com/gin-gonic/gin"
 )
 

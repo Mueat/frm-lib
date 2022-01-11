@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"gitee.com/Rainkropy/frm-lib/util"
+	"github.com/Mueat/frm-lib/util"
 	"github.com/ddliu/go-httpclient"
 )
 

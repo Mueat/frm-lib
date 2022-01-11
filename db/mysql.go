@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"gitee.com/Rainkropy/frm-lib/log"
+	"github.com/Mueat/frm-lib/log"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"

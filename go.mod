@@ -1,4 +1,4 @@
-module gitee.com/Rainkropy/frm-lib
+module github.com/Mueat/frm-lib
 
 go 1.15
 

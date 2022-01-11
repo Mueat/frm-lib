@@ -12,13 +12,13 @@ import (
 /*
 ldap配置
 */
-type ldapConfig struct {
+type LdapConfig struct {
 	Host       string         //ip或者主机名
 	Port       string         //端口
 	BaseDn     string         //基础DN
-	Attributes ldapAttributes //结果集
+	Attributes LdapAttributes //结果集
 }
-type ldapAttributes struct {
+type LdapAttributes struct {
 	UNameKey string //ldap中用户名的key
 	NameKey  string //ldap中姓名的key
 	EmailKey string //ldap中email的key
@@ -32,7 +32,7 @@ type LdapUser struct {
 }
 
 // LdapLogin 使用LDAP登录
-func LdapLogin(config *ldapConfig, username string, password string) (*LdapUser, error) {
+func LdapLogin(config *LdapConfig, username string, password string) (*LdapUser, error) {
 	var (
 		filter     string
 		attributes []string

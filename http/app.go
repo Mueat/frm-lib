@@ -28,6 +28,10 @@ func InitApp(c *gin.Context) App {
 	return App{Request: req, Response: resp}
 }
 
+func (a *App) GetContext() *gin.Context {
+	return a.Request.Ctx
+}
+
 // 获取body数据
 func (a *App) GetBody() []byte {
 	return a.Request.GetBody()
@@ -182,6 +186,10 @@ func (a *App) Json(v interface{}) {
 	a.Response.Json(v)
 }
 
+func (a *App) HTML(name string, obj interface{}) {
+	a.Response.HTML(200, name, obj)
+}
+
 func (a *App) Success(v interface{}) {
 	a.Response.Success(v)
 }
@@ -192,6 +200,10 @@ func (a *App) Error(code int) {
 		msg = "Unkonw Error"
 	}
 	a.Response.Error(code, msg)
+}
+
+func (a *App) ErrorMsg(msg string) {
+	a.Response.Error(-1, msg)
 }
 
 // 数据库

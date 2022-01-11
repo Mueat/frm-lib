@@ -26,6 +26,10 @@ func (r *Response) Json(v interface{}) {
 	r.Ctx.PureJSON(r.StatusCode, v)
 }
 
+func (r *Response) HTML(code int, name string, obj interface{}) {
+	r.Ctx.HTML(code, name, obj)
+}
+
 func (r *Response) Success(v interface{}) {
 	apiResp := ApiResponse{
 		Code: 0,

@@ -179,6 +179,10 @@ func (s *GinServer) Static(url string, dir string) {
 	s.Engine.Static(url, dir)
 }
 
+func (s *GinServer) LoadHTMLGlob(pattern string) {
+	s.Engine.LoadHTMLGlob(pattern)
+}
+
 // 绑定POST请求
 func (s *GinServer) Post(url string, handlers ...RouterFun) {
 	s.Handle(http.MethodPost, url, handlers...)

@@ -11,6 +11,7 @@ require (
 	github.com/facebookgo/httpdown v0.0.0-20180706035922-5979d39b15c2 // indirect
 	github.com/facebookgo/stats v0.0.0-20151006221625-1b76add642e4 // indirect
 	github.com/gin-gonic/gin v1.7.3
+	github.com/go-ldap/ldap/v3 v3.4.1
 	github.com/go-redis/redis/v8 v8.11.2
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/lestrrat/go-file-rotatelogs v0.0.0-20180223000712-d3151e2a480f

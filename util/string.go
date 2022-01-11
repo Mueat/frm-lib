@@ -2,6 +2,7 @@ package util
 
 import (
 	"bytes"
+	crand "crypto/rand"
 	"encoding/json"
 	"fmt"
 	"html"
@@ -670,7 +671,7 @@ func HTMLEntityDecode(str string) string {
 func GenerateNonce(length int64) (string, error) {
 	nonceSymbols := "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	bytes := make([]byte, length)
-	_, err := rand.Read(bytes)
+	_, err := crand.Read(bytes)
 	if err != nil {
 		return "", err
 	}

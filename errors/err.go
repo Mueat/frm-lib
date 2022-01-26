@@ -21,7 +21,7 @@ func (e Err) Error() string {
 	return string(eb)
 }
 
-func New(err error) Err {
+func New(err error) *Err {
 	pc, file, line, ok := runtime.Caller(1)
 	e := Err{}
 	if ok {
@@ -31,10 +31,10 @@ func New(err error) Err {
 		e.Line = line
 	}
 	e.Msg = err.Error()
-	return e
+	return &e
 }
 
-func Code(code int) Err {
+func Code(code int) *Err {
 	pc, file, line, ok := runtime.Caller(1)
 	e := Err{}
 	if ok {
@@ -45,10 +45,10 @@ func Code(code int) Err {
 	}
 	e.Code = code
 	e.Msg = GetErrorMsg(code)
-	return e
+	return &e
 }
 
-func Msg(msg string) Err {
+func Msg(msg string) *Err {
 	pc, file, line, ok := runtime.Caller(1)
 	e := Err{}
 	if ok {
@@ -57,6 +57,7 @@ func Msg(msg string) Err {
 		e.Func = f.Name()
 		e.Line = line
 	}
+	e.Code = System
 	e.Msg = msg
-	return e
+	return &e
 }

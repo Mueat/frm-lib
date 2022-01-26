@@ -1,6 +1,9 @@
 package http
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/Mueat/frm-lib/errors"
+	"github.com/gin-gonic/gin"
+)
 
 type Response struct {
 	Ctx        *gin.Context
@@ -28,6 +31,14 @@ func (r *Response) Json(v interface{}) {
 
 func (r *Response) HTML(code int, name string, obj interface{}) {
 	r.Ctx.HTML(code, name, obj)
+}
+
+func (r *Response) Resp(v interface{}, err *errors.Err) {
+	if err == nil || err.Code == errors.OK {
+		r.Success(v)
+	} else {
+		r.Error(err.Code, err.Msg)
+	}
 }
 
 func (r *Response) Success(v interface{}) {

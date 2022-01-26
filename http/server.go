@@ -4,10 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"runtime/debug"
 	"strconv"
 	"time"
 
+	"github.com/Mueat/frm-lib/errors"
 	elog "github.com/Mueat/frm-lib/log"
 	"github.com/Mueat/frm-lib/util"
 	"github.com/facebookgo/grace/gracehttp"
@@ -60,7 +63,36 @@ func Init(conf ServerConfig) *GinServer {
 		gin.SetMode(gin.ReleaseMode)
 		engine = gin.New()
 	}
-	engine.Use(gin.Recovery())
+
+	// 捕获500错误
+	engine.Use(func(c *gin.Context) {
+		defer func() {
+			if r := recover(); r != nil {
+				//打印错误堆栈信息
+				log.Printf("panic: %v\n", r)
+				debug.PrintStack()
+				//封装通用json返回
+				apiResp := ApiResponse{
+					Code: errors.InternalServerError,
+					Msg:  errors.GetErrorMsg(errors.InternalServerError),
+					Data: nil,
+				}
+				c.PureJSON(200, apiResp)
+			}
+		}()
+		//加载完 defer recover，继续后续接口调用
+		c.Next()
+	})
+
+	// 捕获404错误
+	engine.NoRoute(func(c *gin.Context) {
+		apiResp := ApiResponse{
+			Code: errors.NotFound,
+			Msg:  errors.GetErrorMsg(errors.NotFound),
+			Data: nil,
+		}
+		c.PureJSON(200, apiResp)
+	})
 
 	// 设置body
 	engine.Use(setBody)
@@ -166,9 +198,10 @@ func (s *GinServer) Handle(method string, url string, handlers ...RouterFun) {
 	}
 	ginHandlers := make([]gin.HandlerFunc, 0)
 	for _, fun := range handlers {
+		f := fun
 		ginHandlers = append(ginHandlers, func(c *gin.Context) {
 			app := InitApp(c)
-			fun(&app)
+			f(&app)
 		})
 	}
 	s.Engine.Handle(method, url, ginHandlers...)

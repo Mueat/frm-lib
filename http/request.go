@@ -108,6 +108,11 @@ func (r *Request) GetQuery(key string, def string) string {
 	return r.Ctx.DefaultQuery(key, def)
 }
 
+//绑定查询参数
+func (r *Request) BindQuery(v interface{}) error {
+	return r.Ctx.BindQuery(v)
+}
+
 //从url的params中获取指定key内容
 func (r *Request) GetParam(key string) string {
 	return r.Ctx.Param(key)

@@ -122,3 +122,20 @@ func keysSort(data []int) []int {
 	}
 	return data
 }
+
+// 将错误码写入到markdown文件
+func WriteErrorsToMD(mdFile string) error {
+	keys := make([]int, 0, len(Errors))
+	for k := range Errors {
+		keys = append(keys, k)
+	}
+	keys = keysSort(keys)
+
+	str := "## Error Code\n"
+	str += "| code | msg |\n"
+	str += "| -- | -- | \n"
+	for _, k := range keys {
+		str += fmt.Sprintf("| %d | %s |\n", k, Errors[k])
+	}
+	return writeStrToFile(str, mdFile)
+}

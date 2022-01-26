@@ -47,9 +47,28 @@ func (a *App) GetBodyStr(k string) string {
 	return a.Request.GetBodyStr(k)
 }
 
+func (a *App) GetBodyStrSlice(k string) []string {
+	value := make([]string, 0)
+	err := a.BodyBind(k, &value)
+	if err != nil {
+		return nil
+	}
+	return value
+}
+
 // 获取body中的int64
 func (a *App) GetBodyInt64(k string) int64 {
 	return a.Request.GetBodyInt64(k)
+}
+
+// 获取int64数组
+func (a *App) GetBodyInt64Slice(k string) []int64 {
+	value := make([]int64, 0)
+	err := a.BodyBind(k, &value)
+	if err != nil {
+		return nil
+	}
+	return value
 }
 
 // 获取body中的bool值
@@ -78,6 +97,11 @@ func (a *App) GetQueryInt64(key string, def int64) int64 {
 		return int64(ret)
 	}
 	return def
+}
+
+//绑定查询参数
+func (a *App) BindQuery(v interface{}) error {
+	return a.Request.BindQuery(v)
 }
 
 //从url的params中获取指定key内容
@@ -188,6 +212,10 @@ func (a *App) Json(v interface{}) {
 
 func (a *App) HTML(name string, obj interface{}) {
 	a.Response.HTML(200, name, obj)
+}
+
+func (a *App) Resp(v interface{}, err *errors.Err) {
+	a.Response.Resp(v, err)
 }
 
 func (a *App) Success(v interface{}) {

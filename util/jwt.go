@@ -52,7 +52,7 @@ func GetJWT(req JWTReq) string {
 		Nbf:   req.Nbf.Unix(),
 		Iat:   now,
 		Jti:   jti,
-		IP:    req.Aud,
+		IP:    req.IP,
 		UID:   req.UID,
 		Extra: req.Extra,
 	}

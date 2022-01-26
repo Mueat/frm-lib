@@ -9,13 +9,25 @@ const (
 	Params = 2
 	// ModelNotFound
 	ModelNotFound = 3
+	// Unauthorized
+	Unauthorized = 401
+	// Forbidden
+	Forbidden = 403
+	// Not Found
+	NotFound = 404
+	// Internal Server Error
+	InternalServerError = 500
 )
 
 var Errors = map[int]string{
-	OK:            "success",
-	System:        "SystemError",
-	Params:        "ParamsError",
-	ModelNotFound: "ModelNotFound",
+	OK:                  "success",
+	System:              "SystemError",
+	Params:              "ParamsError",
+	ModelNotFound:       "ModelNotFound",
+	Unauthorized:        "Unauthorized",
+	Forbidden:           "Forbidden",
+	NotFound:            "Not Found",
+	InternalServerError: "Internal Server Error",
 }
 
 func GetErrorMsg(code int) string {

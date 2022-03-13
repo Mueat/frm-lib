@@ -3,7 +3,6 @@ module github.com/Mueat/frm-lib
 go 1.15
 
 require (
-	gitee.com/Rainkropy/frm-lib v0.1.24
 	github.com/BurntSushi/toml v0.3.1
 	github.com/afocus/captcha v0.0.0-20191010092841-4bd1f21c8868
 	github.com/ddliu/go-httpclient v0.6.9

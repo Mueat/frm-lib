@@ -7,8 +7,6 @@ import (
 	"go/token"
 	"io/ioutil"
 	"strings"
-
-	"gitee.com/Rainkropy/frm-lib/util"
 )
 
 // 文件
@@ -224,7 +222,7 @@ func ParseRouterFile(file string) (*AstFile, error) {
 				}
 			case AST_API_PARAMS:
 				if len(v) > 1 {
-					paramsDoc[v[0]] = util.Implode(" ", v[1:])
+					paramsDoc[v[0]] = Implode(" ", v[1:])
 				}
 			default:
 				if ev, ok := comments[k]; ok {
@@ -254,8 +252,8 @@ func ParseRouterFile(file string) (*AstFile, error) {
 		if fun.Type != nil && fun.Type.Params != nil && len(fun.Type.Params.List) > 0 {
 			for _, field := range fun.Type.Params.List {
 				typeName := parseAstExprName(field.Type)
-				if pos := util.Strpos(typeName, ".", 0); pos > 0 {
-					impName := util.Substr(typeName, 0, pos)
+				if pos := Strpos(typeName, ".", 0); pos > 0 {
+					impName := Substr(typeName, 0, pos)
 					if n, ok := imports[impName]; ok {
 						n.Used = true
 					}

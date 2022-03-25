@@ -76,3 +76,9 @@ func (j DataTypeJson) String() string {
 func (j DataTypeJson) GormDataType() string {
 	return "string"
 }
+
+// 将Json转换为其他struct
+func (j *DataTypeJson) UnmarshalTo(v interface{}) error {
+	msg := json.RawMessage(j.RawMessage)
+	return json.Unmarshal(msg, v)
+}

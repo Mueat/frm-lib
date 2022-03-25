@@ -2,15 +2,16 @@ package db
 
 import (
 	"strings"
+	"time"
 
 	"github.com/Mueat/frm-lib/util"
 	"gorm.io/gorm"
 )
 
 type Model struct {
-	ID        uint              `gorm:"primarykey" json:"id"`
-	CreatedAt DataTypeDateStamp `json:"created_at,omitempty"`
-	UpdatedAt DataTypeDateStamp `json:"updated_at,omitempty"`
+	ID        uint      `gorm:"primarykey" json:"id"`
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 }
 
 type DeletedModel struct {
